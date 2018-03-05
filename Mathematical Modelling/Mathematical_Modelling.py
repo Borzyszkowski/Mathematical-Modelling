@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
@@ -9,7 +9,7 @@ def topic ():
 
 def userdefine ():
     print ("Podaj dodatnie wartosci dla opornikow i kondensatorow")
-    R1,R2,C1,C2,U=-1,-1,-1,-1,-1
+    R1,R2,C1,C2=-1,-1,-1,-1
     while(R1<0):
         R1=float(input("R1: "))
     while(R2<0):
@@ -18,14 +18,20 @@ def userdefine ():
         C1=float(input("C1: "))
     while (C2<0):
         C2=float(input("C2: "))
-    while (U<0):
-        U=float(input("U: "))
+    U=float(input("U: "))
+    print ("Wpisane wartości są poprawne.")
     return  R1, R2, C1, C2, U
+
+def graphs ():
+    x = np.arange(0, 3 * np.pi, 0.1)
+    y = np.sin(x)
+    plt.plot(x, y)
+    plt.show()
 
 def main ():
     topic()
     R1,R2,C1,C2,U = userdefine()
-    print(R1)
+    graphs()
 
 main()
 
