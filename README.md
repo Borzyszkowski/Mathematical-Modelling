@@ -1,12 +1,21 @@
 # Mathematical Modelling
 
-Description in Polish:
-#Przesuwnik fazowy RC
-Zamodelowaæ i przeprowadziæ symulacjê elektrycznego RC (rysunek).
-Dane: opornoœci R1(t) i R2, kondensatory C1 i C2, zewnêtrzna si³a elektromotoryczna U=u(t).
-Umo¿liwiæ u¿ytkownikowi definiowanie wszystkich tych parametrów w menu programu (wielkoœci R i C s¹ dodatnie).
-Uwaga: opornoœæ R1(t)=Ra + Rb * exp(-a*t) jest zmienna w czasie.
 
-Opis wynika z praw Kirchoffa (bilans napiêæ i pr¹dów) i prawa Ohma: opornik u=R*i, kondensator: i=C*(du/dt).
-Program powinien wykreœlaæ bie¿¹ce wartoœci wskazanych napiêæ x1(t) i x2(t). 
-Rozwa¿yæ pobudzenie napiêciowe (zewnêtrzna sila elektromotoryczna u(t)) w postaci: fali prostok¹tnej, fali trójk¹tnej, sinusoidy.
+Description in Polish:
+
+Przesuwnik fazowy RC
+
+ZamodelowaÄ‡ i przeprowadziÄ‡ symulacjÄ™ elektrycznego RC (rysunek).
+
+Dane: opornoÅ›ci R1(t) i R2, kondensatory C1 i C2, zewnÄ™trzna siÅ‚a elektromotoryczna U=u(t).
+
+UmoÅ¼liwiÄ‡ uÅ¼ytkownikowi definiowanie wszystkich tych parametrÃ³w w menu programu (wielkoÅ›ci R i C sÄ… dodatnie).
+
+Uwaga: opornoÅ›Ä‡ R1(t)=Ra + Rb * exp(-a*t) jest zmienna w czasie.
+
+
+Opis wynika z praw Kirchoffa (bilans napiÄ™Ä‡ i prÄ…dÃ³w) i prawa Ohma: opornik u=R*i, kondensator: i=C*(du/dt).
+
+Program powinien wykreÅ›laÄ‡ bieÅ¼Ä…ce wartoÅ›ci wskazanych napiÄ™Ä‡ x1(t) i x2(t). 
+
+RozwaÅ¼yÄ‡ pobudzenie napiÄ™ciowe (zewnÄ™trzna sila elektromotoryczna u(t)) w postaci: fali prostokÄ…tnej, fali trÃ³jkÄ…tnej, sinusoidy.
