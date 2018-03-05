@@ -9,7 +9,7 @@ def topic ():
 
 def userdefine ():
     print ("Podaj dodatnie wartosci dla opornikow i kondensatorow")
-    R1,R2,C1,C2=-1,-1,-1,-1
+    R1,R2,C1,C2,U=-1,-1,-1,-1,-1
     while(R1<0):
         R1=float(input("R1: "))
     while(R2<0):
@@ -18,11 +18,13 @@ def userdefine ():
         C1=float(input("C1: "))
     while (C2<0):
         C2=float(input("C2: "))
-    return  R1, R2, C1, C2
+    while (U<0):
+        U=float(input("U: "))
+    return  R1, R2, C1, C2, U
 
 def main ():
     topic()
-    R1,R2,C1,C2 = userdefine()
+    R1,R2,C1,C2,U = userdefine()
     print(R1)
 
 main()
