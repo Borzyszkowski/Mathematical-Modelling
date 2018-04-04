@@ -4,15 +4,37 @@ from scipy import signal
 import time
 import math
 from sympy import *
+import os
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
     print("Temat nr 7")
     print("Bartlomiej Borzyszkowski")
     print("Jan Michalik", '\n')
+    print("Przesuwnik fazowy RC.", '\n')
 
 def userdefine ():
-    print ("Podaj dodatnie wartosci dla opornikow, kondensatorow i sily elektromotorycznej")
+    print ("Wybierz postać pobudzenia napieciowego (zewnetrznej sily elektromotorycznej u(t)).")
+    print ("1. Dla fali prostokatnej wpisz 'P'")
+    print ("2. Dla fali trojkatnej wpisz 'T'")
+    print ("3. Dla fali sinusoidalnej wpisz 'S'")
+  
+    a=0
+    while a ==0:
+        wave=input("Podaj wartosc: ")
+        wave=wave.lower()
+        if wave == 's':
+            a=1
+            sinus()
+        elif wave == 't':
+            a=1
+            triangle()
+        elif wave == 'p':
+            a=1
+            square()
+
+    print()
+    print ("Podaj dodatnie wartosci dla opornikow, kondensatorow i sily elektromotorycznej.")
     R1,R2,C1,C2=-1,-1,-1,-1
     try:
         while(R1<0):
@@ -31,32 +53,37 @@ def userdefine ():
     print ("Wpisane wartosci są poprawne.")
     return  R1, R2, C1, C2, U
 
-def sinus (x1,x2):
+def sinus ():
     x = np.arange(0, 3 * np.pi, 0.1)
     y = np.sin(x)
     plt.plot(x, y)
     plt.show()
 
-def triangle (x1,x2):
+def triangle ():
     t = np.linspace(0, 1, 500)
     triangle = signal.sawtooth(2 * np.pi * 5 * t, 0.5)
     plt.plot(t, triangle)
     plt.show()
 
-def square (x1,x2):
+def square ():
     t = np.linspace(0, 1, 500, endpoint=False)
     plt.plot(t, signal.square(2 * np.pi * 5 * t))
     plt.ylim(-2, 2)
     plt.show()
 
 def main ():
-    topic()
-    R1,R2,C1,C2,U = userdefine()
-    x1,x2 = calculations(R1,R2,C1,C2,U)
-    sinus(x1,x2)
-    triangle(x1,x2)
-    square(x1,x2)
-
+    a=0
+    while a==0:
+        topic()
+        R1,R2,C1,C2,U = userdefine()
+        x1,x2 = calculations(R1,R2,C1,C2,U)
+        print()
+        repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
+        repeat=repeat.lower()
+        if repeat != 't':
+            break
+        os.system("cls")
+     
 def calculations (R1,R2,C1,C2,U):
 
     print()
