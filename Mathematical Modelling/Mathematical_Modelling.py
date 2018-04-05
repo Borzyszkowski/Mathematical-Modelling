@@ -5,6 +5,8 @@ import time
 import math
 from sympy import *
 import os
+from matplotlib.pyplot import figure, show
+from numpy import arange, sin, pi
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
@@ -121,11 +123,29 @@ def graphs(x1,x2):
     print("Napiecia na kondensatorach prezentuja sie nastepujaco: ")
     print("(wykresy w nowych oknach)")
     time.sleep(2)
-    #x1
-    square() #na razie przykladowe, ale bedzie tu napisana funkacja/podprogram
+    
+    #wykres x1(t) i x2(t), oczywiscie do edytowania
+    t = arange(0.0, 1.0, 0.01)
 
-    #x2
-    sinus() #na razie przykladowe, ale bedzie tu napisana funkacja/podprogram
+    fig = figure(1)
+
+    ax1 = fig.add_subplot(211)
+    ax1.plot(t, sin(2*pi*t))
+    ax1.grid(True)
+    ax1.set_ylim((-2, 2))
+    ax1.set_ylabel('napiecie')
+    #ax1.set_xlabel('czas')
+    ax1.set_title('Biezace wartosci wskazanych napiecia x1(t)')
+    
+    ax2 = fig.add_subplot(212)
+    ax2.plot(t, sin(2*2*pi*t))
+    ax2.grid(True)
+    ax2.set_ylim((-2, 2))
+    ax2.set_ylabel('napiecie')
+    ax2.set_xlabel('czas')
+    #ax2.set_title('Biezace wartosci wskazanych napiecia x2(t)')
+
+    show()
 
 main()
 
