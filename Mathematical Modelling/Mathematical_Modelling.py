@@ -77,6 +77,7 @@ def main ():
         topic()
         R1,R2,C1,C2,U = userdefine()
         x1,x2 = calculations(R1,R2,C1,C2,U)
+        graphs(x1,x2)
         print()
         repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
         repeat=repeat.lower()
@@ -94,22 +95,37 @@ def calculations (R1,R2,C1,C2,U):
     a=1 #przykladowe na razie
      
     t = time.time() #time
-    print ("time: ", t)
-
-    I3=1 #przykladowe na razie
-    I2=2 #przykladowe na razie
+    print ("time: ", t) 
 
     R1=Ra+Rb*math.exp(-a*t)
-    print("R1: ", R1)
+    print("R1: ", R1, '\n')
     t = Symbol('t')
-    
-    x1=(1/C1)*integrate(I3,t) #1/C1* całka z I3 po dt, gdzie I3 to prąd plycący przez C1
-    x2=(1/C2)*integrate(I2,t) # x2= #1/C2* całka z I2 po dt, gdzie I2 to prąd płynący przez R2 i C2
 
-    print("Calka x1: ", x1)
-    print("Calka x2: ", x2)
+    I2=(U*t*C1*C1*C2)/(R1*t*C1*C1*C2+R1*R2*C1*C2+R2*C2*t+R1*C1*t+t*t)
+    print("I2: ", I2)
+    I3=(U-R1*I2)/(R1+(1/C1)*t)
+    print("I3: ", I3, '\n')
+
+    #x1=(1/C1)*integrate(I3,t) #1/C1* całka z I3 po dt, gdzie I3 to prąd plycący przez C1
+    #x2=(1/C2)*integrate(I2,t) # x2= #1/C2* całka z I2 po dt, gdzie I2 to prąd płynący przez R2 i C2
+    x1=(1/C1)*I3*t
+    x2=(1/C2)*I2*t
+    
+    print("Napiecie x1(t): ", x1)
+    print("Napiecie x2(t): ", x2)
 
     return x1, x2
+
+def graphs(x1,x2):
+    print()
+    print("Napiecia na kondensatorach prezentuja sie nastepujaco: ")
+    print("(wykresy w nowych oknach)")
+    time.sleep(2)
+    #x1
+    square() #na razie przykladowe, ale bedzie tu napisana funkacja/podprogram
+
+    #x2
+    sinus() #na razie przykladowe, ale bedzie tu napisana funkacja/podprogram
 
 main()
 
