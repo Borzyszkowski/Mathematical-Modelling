@@ -7,6 +7,7 @@ from sympy import *
 import os
 from matplotlib.pyplot import figure, show
 from numpy import arange, sin, pi
+import pygame
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
@@ -181,31 +182,33 @@ def calculations (R1,R2,C1,C2,U):
     print()
     print("Calculations: ")
     
-    Ra=1 #przykladowe na razie
-    Rb=1 #przykladowe na razie
-    a=1 #przykladowe na razie
-     
-    t = time.time() #time
-    print ("time: ", t) 
+    x = Symbol('x')
+    #t = Symbol('t')
+    tau = Symbol('tau')
 
-    R1=Ra+Rb*math.exp(-a*t)
-    print("R1: ", R1, '\n')
-    t = Symbol('t')
+    T1=R1*C1
+    T2=R2*C2
+    tau=R2*C1
 
-    I2=(U*t*C1*C1*C2)/(R1*t*C1*C1*C2+R1*R2*C1*C2+R2*C2*t+R1*C1*t+t*t)
-    print("I2: ", I2)
-    I3=(U-R1*I2)/(R1+(1/C1)*t)
-    print("I3: ", I3, '\n')
+    x1=[]
+    x2=[]
 
-    #x1=(1/C1)*integrate(I3,t) #1/C1* całka z I3 po dt, gdzie I3 to prąd plycący przez C1
-    #x2=(1/C2)*integrate(I2,t) # x2= #1/C2* całka z I2 po dt, gdzie I2 to prąd płynący przez R2 i C2
-    x1=(1/C1)*I3*t
-    x2=(1/C2)*I2*t
-    
-    print("Napiecie x1(t): ", x1)
-    print("Napiecie x2(t): ", x2)
+    #macierze z modelu stanu
+    ax1 = np.array([-(1/T1+1/tau), 1/tau])
+    ax2 = np.array([[1/T2,-1/T2]])
+    bx1 = np.array([1/T1])
 
-    return x1, x2
+
+    t=pygame.time.get_ticks()
+    for i in range (10):
+        x1.append(math.exp( ax1*t )*'x1(0)'*integrate(math.exp( ax1*(t-tau))*bx1*'u(tau)', (tau, 0, t)))
+        x2.append(math.exp(ax2*t)*'x2(0)')
+        #pygame.time.Clock.tick()
+        print(t)
+        t+=1
+
+    x1a=x2a=1
+    return x1a, x2a
 
 def graphs(x1,x2,U,wave):
     print()
