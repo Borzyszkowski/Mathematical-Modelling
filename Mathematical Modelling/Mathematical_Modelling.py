@@ -112,7 +112,3 @@ def calculations (R1,R2,C1,C2,U):
     return x1, x2
 
 main()
-
-
-
-
