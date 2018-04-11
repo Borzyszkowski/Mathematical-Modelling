@@ -5,6 +5,8 @@ import time
 import math
 from sympy import *
 import os
+from matplotlib.pyplot import figure, show
+from numpy import arange, sin, pi
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
@@ -77,6 +79,7 @@ def main ():
         topic()
         R1,R2,C1,C2,U = userdefine()
         x1,x2 = calculations(R1,R2,C1,C2,U)
+        graphs(x1,x2)
         print()
         repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
         repeat=repeat.lower()
@@ -94,21 +97,62 @@ def calculations (R1,R2,C1,C2,U):
     a=1 #przykladowe na razie
      
     t = time.time() #time
-    print ("time: ", t)
-
-    I3=1 #przykladowe na razie
-    I2=2 #przykladowe na razie
+    print ("time: ", t) 
 
     R1=Ra+Rb*math.exp(-a*t)
-    print("R1: ", R1)
+    print("R1: ", R1, '\n')
     t = Symbol('t')
-    
-    x1=(1/C1)*integrate(I3,t) #1/C1* całka z I3 po dt, gdzie I3 to prąd plycący przez C1
-    x2=(1/C2)*integrate(I2,t) # x2= #1/C2* całka z I2 po dt, gdzie I2 to prąd płynący przez R2 i C2
 
-    print("Calka x1: ", x1)
-    print("Calka x2: ", x2)
+    I2=(U*t*C1*C1*C2)/(R1*t*C1*C1*C2+R1*R2*C1*C2+R2*C2*t+R1*C1*t+t*t)
+    print("I2: ", I2)
+    I3=(U-R1*I2)/(R1+(1/C1)*t)
+    print("I3: ", I3, '\n')
+
+    #x1=(1/C1)*integrate(I3,t) #1/C1* całka z I3 po dt, gdzie I3 to prąd plycący przez C1
+    #x2=(1/C2)*integrate(I2,t) # x2= #1/C2* całka z I2 po dt, gdzie I2 to prąd płynący przez R2 i C2
+    x1=(1/C1)*I3*t
+    x2=(1/C2)*I2*t
+    
+    print("Napiecie x1(t): ", x1)
+    print("Napiecie x2(t): ", x2)
 
     return x1, x2
 
+<<<<<<< HEAD
 main()
+=======
+def graphs(x1,x2):
+    print()
+    print("Napiecia na kondensatorach prezentuja sie nastepujaco: ")
+    print("(wykresy w nowych oknach)")
+    time.sleep(2)
+    
+    #wykres x1(t) i x2(t), oczywiscie do edytowania
+    t = arange(0.0, 1.0, 0.01)
+
+    fig = figure(1)
+
+    ax1 = fig.add_subplot(211)
+    ax1.plot(t, sin(2*pi*t))
+    ax1.grid(True)
+    ax1.set_ylim((-2, 2))
+    ax1.set_ylabel('napiecie')
+    #ax1.set_xlabel('czas')
+    ax1.set_title('Biezace wartosci wskazanych napiecia x1(t)')
+    
+    ax2 = fig.add_subplot(212)
+    ax2.plot(t, sin(2*2*pi*t))
+    ax2.grid(True)
+    ax2.set_ylim((-2, 2))
+    ax2.set_ylabel('napiecie')
+    ax2.set_xlabel('czas')
+    #ax2.set_title('Biezace wartosci wskazanych napiecia x2(t)')
+
+    show()
+
+main()
+
+
+
+
+>>>>>>> 649f72bca54267b54a8e1605b2bc57d77883533c
