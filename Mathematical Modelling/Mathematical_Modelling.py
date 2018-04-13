@@ -53,139 +53,58 @@ def userdefine ():
         time.sleep(5)
         exit(0)
     print ("Wpisane wartosci są poprawne.")
-    print ("Pracujemy nad ukladem. Prosimy o cierpliwosc.")
+    print ("Pracujemy nad ukladem. Prosimy o cierpliwosc - trwaja obliczenia.")
     return  R1, R2, C1, C2, U, wave
 
-def sinus (x, u, number, freq=1, ampl=1):
-    t = [0,1,2,3,4,5,6,7,8,9,10]
+def entrance(R1,R2,C1,C2,U,wave):
+    global x, u
+    if wave == "s":
+       x, u = sinSignal(x, u, samples, delta)        
+    elif wave == "p":        
+       x, u = squareSignal(x, u, samples, delta)       
+    elif wave == "t":      
+       x, u = triangleSignal(x, u, samples, delta)
+
+def sinSignal(x, u, samples, delta, freq=1, ampl=1):
     x.clear()
-    t.clear()
-    halfPeriod = 1/freq / 2
-    fig = figure(1)
-    ax1 = fig.add_subplot(211)
-    ax1.grid(True)
-    arg = (2 * math.pi) / 1000
-    for i in range(2000):
-        x.append(arg * i)
-        t.append(ampl * math.sin(arg * freq * i))
-    ax1.plot(x, t)
-
-    t.clear()
     u.clear()
-    ax2 = fig.add_subplot(212)
-    arg = (2 * math.pi) / 1000
-    for i in range(2000):
-        u.append(arg * i)
-        t.append(ampl * math.sin(arg * freq * i))
-    ax2.plot(u, t)
-    ax2.grid(True)
-    ax2.set_ylabel('napiecie')
-    ax2.set_xlabel('czas')
-    ax1.set_ylabel('napiecie')
-    ax1.set_xlabel('czas')
-    if number==1:
-        ax1.set_title('Biezace wartosci napiecia x1(t)')
-    elif number==2:
-        ax1.set_title('Biezace wartosci napiecia x2(t)')
-    ax2.set_title('Wykres zewnetrznej sily elektomotorycznej U=u(t)')
-    plt.tight_layout()
-    show()
+    arg = 2 * math.pi
+    for i in range(samples):
+        x.append(i * delta)
+        u.append(ampl * math.sin(arg * freq * x[i]))
+    plt.plot(x, u)
+    plt.show()
+    return x, u
 
-def triangle (x, u,number, freq=1, ampl=1):
-    t = [0,1,2,3,4,5,6,7,8,9,10]
+def squareSignal(x, u, samples, delta, freq=1, ampl=1):
     x.clear()
-    t.clear()
-    halfPeriod = 1/freq / 2
-    fig = figure(1)
-    ax1 = fig.add_subplot(211)
-    ax1.grid(True)
-    for i in range(2000 * freq):
-        x.append(i/(1000 * freq))
-        t.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
-    ax1.plot(x, t)
-
-    t.clear()
     u.clear()
-    ax2 = fig.add_subplot(212)
-    for i in range(2000 * freq):
-        u.append(i/(1000 * freq))
-        t.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
-    ax2.plot(u, t)
-    ax2.grid(True)
-    ax2.set_ylabel('napiecie')
-    ax2.set_xlabel('czas')
-    ax1.set_ylabel('napiecie')
-    ax1.set_xlabel('czas')
-    if number==1:
-        ax1.set_title('Biezace wartosci napiecia x1(t)')
-    elif number==2:
-        ax1.set_title('Biezace wartosci napiecia x2(t)')
-    ax2.set_title('Wykres zewnetrznej sily elektomotorycznej U=u(t)')
-    plt.tight_layout()
-    show()
+    period = 1/freq
+    for i in range(samples):
+        x.append(i * delta)
+        if i % (period/delta) <= (period/(2*delta)):
+            u.append(ampl)
+        elif i % (period/delta) > (period/(2*delta)):
+            u.append(-ampl)
+    plt.plot(x, u)
+    plt.show()
+    return x, u
 
-def square (x, u,number, freq=1, ampl=1):
-    t = [0,1,2,3,4,5,6,7,8,9,10]
+def triangleSignal(x, u, samples, delta, freq=1, ampl=1):
     x.clear()
-    t.clear()
-    halfPeriod = 1/freq / 2
-    fig = figure(1)
-    ax1 = fig.add_subplot(211)
-    ax1.grid(True)
-    for i in range(2000 * freq):
-        x.append(i/(1000 * freq))
-        if i % 1000 <= 500:
-            t.append(ampl)
-        elif i % 1000 > 500:
-            t.append(-ampl)
-    ax1.plot(x, t)
-
-    t.clear()
     u.clear()
-    ax2 = fig.add_subplot(212)
-    for i in range(2000 * freq):
-        u.append(i/(1000 * freq))
-        if i % 1000 <= 500:
-            t.append(ampl)
-        elif i % 1000 > 500:
-            t.append(-ampl)
-    ax2.plot(u, t)
-    ax2.grid(True)
-    ax2.set_ylabel('napiecie')
-    ax2.set_xlabel('czas')
-    ax1.set_ylabel('napiecie')
-    ax1.set_xlabel('czas')
-    if number==1:
-        ax1.set_title('Biezace wartosci napiecia x1(t)')
-    elif number==2:
-        ax1.set_title('Biezace wartosci napiecia x2(t)')
-    ax2.set_title('Wykres zewnetrznej sily elektomotorycznej U=u(t)')
-    plt.tight_layout()
-    show()
+    halfPeriod = 1/freq / 2
+    for i in range(samples):
+        x.append(i * delta)
+        u.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
+    plt.plot(x, u)
+    plt.show()
+    return x, u
 
-def main ():
-    a=0
-    while a==0:
-        topic()
-        R1,R2,C1,C2,U,wave = userdefine()
-        x1,x2 = calculations(R1,R2,C1,C2,U)
-        graphs(x1,x2,U,wave)
-        print()
-        repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
-        repeat=repeat.lower()
-        if repeat != 't':
-            break
-        os.system("cls")
-     
-def calculations (R1,R2,C1,C2,U):
-
-    time = 20
-    delta = 0.01
-    samples = int(time / delta)
-    x = []
-    u = []
-    x1 = [1,2,3,4,5]
-    x2 = [0]
+def calculations(R1,R2,C1,C2,U, wave):
+    global x1, t
+    x1=[]
+    x2 = []
     T1=R1*C1
     T2=R2*C2
     tau=R2*C1
@@ -225,40 +144,54 @@ def calculations (R1,R2,C1,C2,U):
         part2 = -(1/T2) * integrate(x2)
         return part1 + part2
 
-    def compute():
+    def compute(wave):
         global y
         y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)
+        if wave=='p':
+            rodzaj="prostokatnym"
+        elif wave=='t':
+            rodzaj="trojkatnym"
+        elif wave=='s':
+            rodzaj='sinusoidalnym'
         plt.plot(y1)
-        plt.title('Wykres Seby 1')
+        plt.tight_layout()
+        plt.title('Biezace wartosci napiecia x1(t) przy wejsciu %s:'%rodzaj)
         plt.show()
         plt.plot(y2)
-        plt.title('Wykres Seby 2')
+        plt.tight_layout()
+        plt.title('Biezace wartosci napiecia x2(t) przy wejsciu %s:'%rodzaj)
         plt.show()
 
-    compute()
+    compute(wave)
     return x1, x2
 
-def graphs(x1,x2,U,wave):
-    print()
-    print("Napiecia na kondensatorach prezentuja sie nastepujaco: ")
-    print("(wykresy w nowych oknach)")
-    time.sleep(2)
+def main ():
+    a=0
+    while a==0:
+        topic()
 
-    x1=[1,2,3,4,5]
-    x2=[1,2,3,4,5]
-    U=[2,3,4,5,2,3,4,5]
-    number=1
-    if wave == 's':
-        sinus(x1,U,number)
-        number+=1
-        sinus(x2,U,number)
-    elif wave == 't':
-        triangle(x1,U,number)
-        number+=1
-        triangle(x2,U,number)
-    elif wave == 'p':
-        square(x1,U,number)
-        number+=1
-        square(x2,U,number)
+        R1,R2,C1,C2,U,wave = userdefine()
+        entrance(R1,R2,C1,C2,U,wave)
+        
+        x1,x2 = calculations(R1,R2,C1,C2,U, wave)
 
+        print()
+        repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
+        repeat=repeat.lower()
+        if repeat != 't':
+            break
+        os.system("cls")
+
+k = 0
+a = 0
+b = 0
+m = 0
+A = 0
+time = 20
+delta = 0.01
+samples = int(time / delta)
+x = []
+y = []
+u = []
+e = []
 main()
