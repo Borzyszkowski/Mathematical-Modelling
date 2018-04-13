@@ -184,7 +184,7 @@ def calculations (R1,R2,C1,C2,U):
     samples = int(time / delta)
     x = []
     u = []
-    x1 = [0]
+    x1 = [1,2,3,4,5]
     x2 = [0]
     T1=R1*C1
     T2=R2*C2
@@ -234,7 +234,6 @@ def calculations (R1,R2,C1,C2,U):
         plt.plot(y2)
         plt.title('Wykres Seby 2')
         plt.show()
-
 
     compute()
     return x1, x2
