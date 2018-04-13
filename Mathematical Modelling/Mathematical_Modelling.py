@@ -7,7 +7,6 @@ from sympy import *
 import os
 from matplotlib.pyplot import figure, show
 from numpy import arange, sin, pi
-import pygame
 
 def topic ():
     print("Metody Modelowania Matematycznego - Projekt")
@@ -54,6 +53,7 @@ def userdefine ():
         time.sleep(5)
         exit(0)
     print ("Wpisane wartosci są poprawne.")
+    print ("Pracujemy nad ukladem. Prosimy o cierpliwosc.")
     return  R1, R2, C1, C2, U, wave
 
 def sinus (x, u, number, freq=1, ampl=1):
@@ -179,7 +179,74 @@ def main ():
      
 def calculations (R1,R2,C1,C2,U):
 
-    print()
+    time = 20
+    delta = 0.01
+    samples = int(time / delta)
+    x = []
+    y = []
+    u = []
+    e = []
+    x1 = [0]
+    x2 = [0]
+    x3 = [0]
+    T1=R1*C1
+    T2=R2*C2
+    tau=R2*C1
+
+
+    def integrate(arr):
+        z = 0
+        for element in arr:
+            z += element * delta
+        return z
+
+
+    def calculate(_samples, _delta, _C2, _R1, _U, _R2, _C1, _u):
+        global samples, delta, C2, R1, U, R2, C1, u
+        samples = _samples
+        delta = _delta
+        C2 = _C2
+        R1 = _R1
+        U = _U
+        R2 = _R2
+        C1 = _C1
+        u = _u
+        stateSpace()
+        return x3
+
+
+    def stateSpace():
+        for i in range(samples):
+            x1.append(integrate(x2))
+            x2.append(integrate(x3))
+            x3.append(equation())
+
+
+    def equation():
+        part1 = -(1/T1+1/tau)*integrate(x1)
+        part2 = +1/tau * integrate(x2)
+        part3 = 1/T1 * integrate(u)
+        return part1 + part2 + part3
+
+    def compute():
+        global y
+        y = calculate(samples, delta, C2, R1, U, R2, C1, u)
+        plt.plot(y)
+        plt.title('Wykres Seby')
+        plt.show()
+
+    compute()
+    return x1, x2
+
+
+
+
+
+
+
+
+
+    '''print()
     print("Calculations: ")
     
     x = Symbol('x')
@@ -190,25 +257,34 @@ def calculations (R1,R2,C1,C2,U):
     T2=R2*C2
     tau=R2*C1
 
-    x1=[]
-    x2=[]
+    x1=[0]
+    x2=[0]
 
     #macierze z modelu stanu
     ax1 = np.array([-(1/T1+1/tau), 1/tau])
     ax2 = np.array([[1/T2,-1/T2]])
     bx1 = np.array([1/T1])
 
-
-    t=pygame.time.get_ticks()
+    t=pygame.time.get_ticks()+1
     for i in range (10):
-        x1.append(math.exp( ax1*t )*'x1(0)'*integrate(math.exp( ax1*(t-tau))*bx1*'u(tau)', (tau, 0, t)))
-        x2.append(math.exp(ax2*t)*'x2(0)')
+        X1exponenta=1
+        X2exponenta=1
+        X1tauexponenta=1
+        for k in range (1,20):
+            X1exponenta+=(pow(ax1, k)*pow(t, k))/math.factorial(k)
+            X2exponenta+=(pow(ax2, k)*pow(t, k))/math.factorial(k)
+            X1tauexponenta+=(pow(ax1, k)*pow(t-tau, k))/math.factorial(k)
+        tau = Symbol('tau') 
+        x1.append(X1exponenta*x1[0]*integrate(X1tauexponenta*bx1, (tau,0, t))) #*'u(tau)'
+        #x2.append(math.exp(ax2*t)*'x2(0)')
         #pygame.time.Clock.tick()
         print(t)
         t+=1
+    print(X1exponenta,'\n')
+    print(X2exponenta,'\n')
 
     x1a=x2a=1
-    return x1a, x2a
+    return x1a, x2a'''
 
 def graphs(x1,x2,U,wave):
     print()
