@@ -59,13 +59,13 @@ def userdefine ():
 def entrance(R1,R2,C1,C2,U,wave):
     global x, u
     if wave == "s":
-       x, u = sinSignal(x, u, samples, delta)        
+       x, u = sinSignal(x, u, samples, delta, U)        
     elif wave == "p":        
-       x, u = squareSignal(x, u, samples, delta)       
+       x, u = squareSignal(x, u, samples, delta, U)       
     elif wave == "t":      
-       x, u = triangleSignal(x, u, samples, delta)
+       x, u = triangleSignal(x, u, samples, delta, U)
 
-def sinSignal(x, u, samples, delta, freq=1, ampl=1):
+def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     x.clear()
     u.clear()
     arg = 2 * math.pi
@@ -73,10 +73,13 @@ def sinSignal(x, u, samples, delta, freq=1, ampl=1):
         x.append(i * delta)
         u.append(ampl * math.sin(arg * freq * x[i]))
     plt.plot(x, u)
+    plt.xlabel('t')
+    plt.ylabel('u(t)')
+    plt.title('Wykres pobudzenia napieciowego U=u(t)')
     plt.show()
     return x, u
 
-def squareSignal(x, u, samples, delta, freq=1, ampl=1):
+def squareSignal(x, u, samples, delta, ampl=1, freq=1):
     x.clear()
     u.clear()
     period = 1/freq
@@ -87,10 +90,13 @@ def squareSignal(x, u, samples, delta, freq=1, ampl=1):
         elif i % (period/delta) > (period/(2*delta)):
             u.append(-ampl)
     plt.plot(x, u)
+    plt.xlabel('t')
+    plt.ylabel('u(t)')
+    plt.title('Wykres pobudzenia napieciowego U=u(t)')
     plt.show()
     return x, u
 
-def triangleSignal(x, u, samples, delta, freq=1, ampl=1):
+def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     x.clear()
     u.clear()
     halfPeriod = 1/freq / 2
@@ -98,12 +104,15 @@ def triangleSignal(x, u, samples, delta, freq=1, ampl=1):
         x.append(i * delta)
         u.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
     plt.plot(x, u)
+    plt.xlabel('t')
+    plt.ylabel('u(t)')
+    plt.title('Wykres pobudzenia napieciowego U=u(t)')
     plt.show()
     return x, u
 
 def calculations(R1,R2,C1,C2,U, wave):
     global x1, t
-    x1=[]
+    x1 = []
     x2 = []
     T1=R1*C1
     T2=R2*C2
@@ -155,11 +164,15 @@ def calculations(R1,R2,C1,C2,U, wave):
             rodzaj='sinusoidalnym'
         plt.plot(y1)
         plt.tight_layout()
-        plt.title('Biezace wartosci napiecia x1(t) przy wejsciu %s:'%rodzaj)
+        plt.xlabel('t')
+        plt.ylabel('x1(t)')
+        plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
         plt.show()
         plt.plot(y2)
         plt.tight_layout()
-        plt.title('Biezace wartosci napiecia x2(t) przy wejsciu %s:'%rodzaj)
+        plt.xlabel('t')
+        plt.ylabel('x2(t)')
+        plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
         plt.show()
 
     compute(wave)
