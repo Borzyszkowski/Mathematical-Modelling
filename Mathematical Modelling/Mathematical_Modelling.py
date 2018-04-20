@@ -27,27 +27,24 @@ def userdefine ():
         wave=wave.lower()
         if wave == 's':
             a=1
-            #sinus()
         elif wave == 't':
             a=1
-            #triangle()
         elif wave == 'p':
-            a=1
-            #square()
+            a=1            
 
     print()
     print ("Podaj dodatnie wartosci dla opornikow, kondensatorow i sily elektromotorycznej.")
     R1,R2,C1,C2=-1,-1,-1,-1
     try:
         while(R1<=0):
-            R1=float(input("R1: "))
+            R1=float(input("R1[kΩ]: "))
         while(R2<=0):
-            R2=float(input("R2: "))
+            R2=float(input("R2[kΩ]: "))
         while(C1<=0):
-            C1=float(input("C1: "))
+            C1=float(input("C1[µF]: "))
         while (C2<=0):
-            C2=float(input("C2: "))
-        U=float(input("U: "))
+            C2=float(input("C2[µF]: "))
+        U=float(input("U[V]: "))
     except:
         print ("Podano bledna wartosc.")
         time.sleep(5)
@@ -72,7 +69,9 @@ def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     for i in range(samples):
         x.append(i * delta)
         u.append(ampl * math.sin(arg * freq * x[i]))
-    plt.plot(x, u)
+    a = x[:int(samples/10)]
+    b = u[:int(samples/10)]
+    plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
@@ -89,7 +88,9 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
             u.append(ampl)
         elif i % (period/delta) > (period/(2*delta)):
             u.append(-ampl)
-    plt.plot(x, u)
+    a = x[:int(samples/10)]
+    b = u[:int(samples/10)]
+    plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
@@ -103,7 +104,9 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     for i in range(samples):
         x.append(i * delta)
         u.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
-    plt.plot(x, u)
+    a = x[:int(samples/10)]
+    b = u[:int(samples/10)]
+    plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
