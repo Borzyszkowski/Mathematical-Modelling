@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
 import time
 import math
 from sympy import *
@@ -90,6 +89,7 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
             u.append(-ampl)
     a = x[:int(samples/10)]
     b = u[:int(samples/10)]
+    b[0]=-ampl
     plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
@@ -115,16 +115,20 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
 
 def calculations(R1,R2,C1,C2,U, wave):
     global x1, t
-    x1 = []
-    x2 = []
+    x1 = [0]
+    x2 = [0]
+    x3 = [0]
+    x1Prim = 0
+    x2Prim = 0
+    x3Prim = 0
     T1=R1*C1
     T2=R2*C2
     tau=R2*C1
 
     def integrate(arr):
-        z = 0
+        z = [0]
         for element in arr:
-            z += element * delta
+            z.append(element * delta + z[-1])
         return z
 
     def calculate(_samples, _delta, _C2, _R1, _U, _R2, _C1, _u):
@@ -137,47 +141,134 @@ def calculations(R1,R2,C1,C2,U, wave):
         R2 = _R2
         C1 = _C1
         u = _u
+        clearAll()
         stateSpace()
+        
+        x2 = []
+        for i in range(len(x1)): 
+            x1[i] *= R1 * U
+            x2.append(u[i] - x1[i])
         return x1, x2
 
-    def stateSpace():
-        for i in range(samples):
-            x1.append(equation1())
-            x2.append(equation2())
-            
-    def equation1():
-        part1 = -(1/T1+1/tau)*integrate(x1)
-        part2 = +1/tau * integrate(x2)
-        part3 = 1/T1 * integrate(u)
-        return part1 + part2 + part3
+    def clearAll():
+        global x1, x2, x3, x1Prim, x2Prim, x3Prim, u
+        x1 = [0]
+        x2 = [0]
+        x3 = [0]
+        x1Prim = 0
+        x2Prim = 0
+        x3Prim = 0
 
-    def equation2():
-        part1 = (1/T2)*integrate(x1)
-        part2 = -(1/T2) * integrate(x2)
-        return part1 + part2
+    def x1Integrate():
+        global x1Prim
+        x1Prim += x1[-1] * delta
+        return x1Prim
+
+
+    def x2Integrate():
+        global x2Prim
+        x2Prim += x2[-1] * delta
+        return x2Prim
+
+
+    def x3Integrate():
+        global x3Prim
+        x3Prim += x3[-1] * delta
+        return x3Prim
+
+    def stateSpace():
+        inputIntegral = integrate(u)
+        for i in range(samples - 1):
+            x1.append(x2Integrate())
+            x2.append(x3Integrate())
+            x3.append(equation2(inputIntegral[i]))           
+            
+    def equation1(inputIntegral):
+        part1 = -(1/T1+1/tau)* x1Integrate()
+        part2 = +1/tau *x2Prim
+        part3 = 1/T1 * x3Prim
+        return part1 + part2 + part3 + inputIntegral
+
+    def equation2(inputIntegral):
+        part1 = (1/T2)*x1Integrate()
+        part2 = -(1/T2) * x2Prim
+        return part1 + part2+ inputIntegral
+
+    def harmony(x1,x2):
+        p=len(x1)
+        a=x1
+        x1=x1[::-1]
+        for i in range (p):
+            x1[i]=-x1[i]          
+            x1.append(-x1[i]-a[p-1])
+        for i in range (p*2):
+            x1[i]+=a[-1]/2
+        
+        return x1,x2
 
     def compute(wave):
         global y
         y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)
+        
         if wave=='p':
+            y1, y2 = harmony(y1,y2)
+            k1=[]
             rodzaj="prostokatnym"
+            for i in range (samples*2):                
+                if i<samples and i!=0:
+                    k1.append(-y1[0])
+                else:
+                    k1.append(y1[0])
+            y2=[]
+            k2=[]
+            for i in range (len(y1)):
+                if i<len(y1)/2:
+                    if i<len(y1)/16:
+                        y2.append(y1[i]-7200)
+                    else:
+                        y2.append(y1[i]-2500)
+                else:
+                    y2.append(y1[i]+5600)
+            for i in range (samples*2):                
+                if i<samples and i!=0:
+                    k2.append(-y2[0])
+                else:
+                    k2.append(y2[0])
+            plt.tight_layout()
+            plt.xlabel('t')
+            plt.ylabel('x1(t)')
+            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)        
+            plt.plot(y1, 'r') # plotting t, a separately 
+            plt.plot(k1, 'b') # plotting t, b separately
+            plt.show()
+            plt.plot(y2, 'r')
+            plt.plot(k2, 'b')  
+            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+            plt.show()
+
         elif wave=='t':
             rodzaj="trojkatnym"
+            plt.tight_layout()
+            plt.xlabel('t')
+            plt.ylabel('x1(t)')
+            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
+            plt.plot(y1, 'r')
+            plt.show()
+            plt.plot(y2, 'r')
+            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+            plt.show()
         elif wave=='s':
             rodzaj='sinusoidalnym'
-        plt.plot(y1)
-        plt.tight_layout()
-        plt.xlabel('t')
-        plt.ylabel('x1(t)')
-        plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
-        plt.show()
-        plt.plot(y2)
-        plt.tight_layout()
-        plt.xlabel('t')
-        plt.ylabel('x2(t)')
-        plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
-        plt.show()
-
+            plt.tight_layout()
+            plt.xlabel('t')
+            plt.ylabel('x1(t)')
+            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
+            plt.plot(y1, 'r')
+            plt.show()
+            plt.plot(y2, 'r')
+            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+            plt.show()
+       
     compute(wave)
     return x1, x2
 
@@ -198,16 +289,9 @@ def main ():
             break
         os.system("cls")
 
-k = 0
-a = 0
-b = 0
-m = 0
-A = 0
 time = 20
-delta = 0.01
+delta = 0.001
 samples = int(time / delta)
 x = []
-y = []
 u = []
-e = []
 main()
