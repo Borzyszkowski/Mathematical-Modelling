@@ -128,7 +128,7 @@ def calculations(R1,R2,C1,C2,U, wave):
     def integrate(arr):
         z = [0]
         for element in arr:
-            z.append(element * delta + z[-1])
+            z.append(element + z[-1])
         return z
 
     def calculate(_samples, _delta, _C2, _R1, _U, _R2, _C1, _u):
@@ -192,7 +192,7 @@ def calculations(R1,R2,C1,C2,U, wave):
     def equation2(inputIntegral):
         part1 = (1/T2)*x1Integrate()
         part2 = -(1/T2) * x2Prim
-        return part1 + part2+ inputIntegral
+        return part1 + part2 + inputIntegral
 
     def harmony(x1,x2):
         p=len(x1)
@@ -224,11 +224,11 @@ def calculations(R1,R2,C1,C2,U, wave):
             for i in range (len(y1)):
                 if i<len(y1)/2:
                     if i<len(y1)/16:
-                        y2.append(y1[i]-7200)
+                        y2.append(y1[i])
                     else:
-                        y2.append(y1[i]-2500)
+                        y2.append(y1[i])
                 else:
-                    y2.append(y1[i]+5600)
+                    y2.append(y1[i])
             for i in range (samples*2):                
                 if i<samples and i!=0:
                     k2.append(-y2[0])
