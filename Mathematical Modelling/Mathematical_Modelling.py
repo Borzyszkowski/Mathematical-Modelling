@@ -89,7 +89,6 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
             u.append(-ampl)
     a = x[:int(samples/10)]
     b = u[:int(samples/10)]
-    b[0]=-ampl
     plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
@@ -117,10 +116,8 @@ def calculations(R1,R2,C1,C2,U, wave):
     global x1, t
     x1 = [0]
     x2 = [0]
-    x3 = [0]
     x1Prim = 0
     x2Prim = 0
-    x3Prim = 0
     T1=R1*C1
     T2=R2*C2
     tau=R2*C1
@@ -151,124 +148,65 @@ def calculations(R1,R2,C1,C2,U, wave):
         return x1, x2
 
     def clearAll():
-        global x1, x2, x3, x1Prim, x2Prim, x3Prim, u
+        global x1, x2, x1Prim, x2Prim, u
         x1 = [0]
         x2 = [0]
-        x3 = [0]
         x1Prim = 0
-        x2Prim = 0
-        x3Prim = 0
+        x2Prim = 0   
 
     def x1Integrate():
         global x1Prim
-        x1Prim += x1[-1] * delta
+        x1Prim += x1[-1]
         return x1Prim
-
 
     def x2Integrate():
         global x2Prim
-        x2Prim += x2[-1] * delta
+        x2Prim += x2[-1]
         return x2Prim
-
-
-    def x3Integrate():
-        global x3Prim
-        x3Prim += x3[-1] * delta
-        return x3Prim
 
     def stateSpace():
         inputIntegral = integrate(u)
         for i in range(samples - 1):
-            x1.append(x2Integrate())
-            x2.append(x3Integrate())
-            x3.append(equation2(inputIntegral[i]))           
+            x1.append(equation1(inputIntegral[i]))
+            x2.append(equation2(inputIntegral[i]))           
             
     def equation1(inputIntegral):
         part1 = -(1/T1+1/tau)* x1Integrate()
-        part2 = +1/tau *x2Prim
-        part3 = 1/T1 * x3Prim
-        return part1 + part2 + part3 + inputIntegral
+        part2 = +1/tau *x2Integrate()
+        part3 = 1/T1 * inputIntegral
+        return part1 + part2 + part3
 
     def equation2(inputIntegral):
         part1 = (1/T2)*x1Integrate()
-        part2 = -(1/T2) * x2Prim
+        part2 = -(1/T2) * x2Integrate()
         return part1 + part2 + inputIntegral
-
-    def harmony(x1,x2):
-        p=len(x1)
-        a=x1
-        x1=x1[::-1]
-        for i in range (p):
-            x1[i]=-x1[i]          
-            x1.append(-x1[i]-a[p-1])
-        for i in range (p*2):
-            x1[i]+=a[-1]/2
-        
-        return x1,x2
 
     def compute(wave):
         global y
         y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)
         
         if wave=='p':
-            y1, y2 = harmony(y1,y2)
-            k1=[]
             rodzaj="prostokatnym"
-            for i in range (samples*2):                
-                if i<samples and i!=0:
-                    k1.append(-y1[0])
-                else:
-                    k1.append(y1[0])
-            y2=[]
-            k2=[]
-            for i in range (len(y1)):
-                if i<len(y1)/2:
-                    if i<len(y1)/16:
-                        y2.append(y1[i])
-                    else:
-                        y2.append(y1[i])
-                else:
-                    y2.append(y1[i])
-            for i in range (samples*2):                
-                if i<samples and i!=0:
-                    k2.append(-y2[0])
-                else:
-                    k2.append(y2[0])
-            plt.tight_layout()
-            plt.xlabel('t')
-            plt.ylabel('x1(t)')
-            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)        
-            plt.plot(y1, 'r') # plotting t, a separately 
-            plt.plot(k1, 'b') # plotting t, b separately
-            plt.show()
-            plt.plot(y2, 'r')
-            plt.plot(k2, 'b')  
-            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
-            plt.show()
-
         elif wave=='t':
             rodzaj="trojkatnym"
-            plt.tight_layout()
-            plt.xlabel('t')
-            plt.ylabel('x1(t)')
-            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
-            plt.plot(y1, 'r')
-            plt.show()
-            plt.plot(y2, 'r')
-            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
-            plt.show()
         elif wave=='s':
             rodzaj='sinusoidalnym'
-            plt.tight_layout()
-            plt.xlabel('t')
-            plt.ylabel('x1(t)')
-            plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
-            plt.plot(y1, 'r')
-            plt.show()
-            plt.plot(y2, 'r')
-            plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
-            plt.show()
+        y1_wynikowe=y1[int(samples-samples/10):]
+        y2_wynikowe=y2[int(samples-samples/10):]
+        #b = u[:int(samples/10)]
+        plt.tight_layout()
+        plt.xlabel('t')
+        plt.ylabel('x1(t)')
+        plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
+        plt.plot(y1_wynikowe, 'r')
+        #plt.plot(b, 'b') # plotting t, b separately
+        plt.show()
+        plt.plot(y2_wynikowe, 'r')
+        #plt.plot(b, 'b') # plotting t, b separately
+        plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+        plt.show()
        
+
     compute(wave)
     return x1, x2
 
