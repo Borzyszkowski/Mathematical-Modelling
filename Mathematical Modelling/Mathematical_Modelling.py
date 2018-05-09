@@ -74,6 +74,7 @@ def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
@@ -93,6 +94,7 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
@@ -109,6 +111,7 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
@@ -200,10 +203,12 @@ def calculations(R1,R2,C1,C2,U, wave):
         plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
         plt.plot(y1_wynikowe, 'r')
         #plt.plot(b, 'b') # plotting t, b separately
+        plt.grid()
         plt.show()
         plt.plot(y2_wynikowe, 'r')
         #plt.plot(b, 'b') # plotting t, b separately
         plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+        plt.grid()
         plt.show()
        
 
