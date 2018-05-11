@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
 import time
 import math
 from sympy import *
@@ -75,6 +74,7 @@ def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
@@ -94,6 +94,7 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
@@ -110,21 +111,24 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.xlabel('t')
     plt.ylabel('u(t)')
     plt.title('Wykres pobudzenia napieciowego U=u(t)')
+    plt.grid()
     plt.show()
     return x, u
 
 def calculations(R1,R2,C1,C2,U, wave):
     global x1, t
-    x1 = []
-    x2 = []
+    x1 = [0]
+    x2 = [0]
+    x1Prim = 0
+    x2Prim = 0
     T1=R1*C1
     T2=R2*C2
     tau=R2*C1
 
     def integrate(arr):
-        z = 0
+        z = [0]
         for element in arr:
-            z += element * delta
+            z.append(element + z[-1])
         return z
 
     def calculate(_samples, _delta, _C2, _R1, _U, _R2, _C1, _u):
@@ -137,46 +141,76 @@ def calculations(R1,R2,C1,C2,U, wave):
         R2 = _R2
         C1 = _C1
         u = _u
+        clearAll()
         stateSpace()
+        
+        x2 = []
+        for i in range(len(x1)): 
+            x1[i] *= R1 * U
+            x2.append(u[i] - x1[i])
         return x1, x2
 
+    def clearAll():
+        global x1, x2, x1Prim, x2Prim, u
+        x1 = [0]
+        x2 = [0]
+        x1Prim = 0
+        x2Prim = 0   
+
+    def x1Integrate():
+        global x1Prim
+        x1Prim += x1[-1]
+        return x1Prim
+
+    def x2Integrate():
+        global x2Prim
+        x2Prim += x2[-1]
+        return x2Prim
+
     def stateSpace():
-        for i in range(samples):
-            x1.append(equation1())
-            x2.append(equation2())
+        inputIntegral = integrate(u)
+        for i in range(samples - 1):
+            x1.append(equation1(inputIntegral[i]))
+            x2.append(equation2(inputIntegral[i]))           
             
-    def equation1():
-        part1 = -(1/T1+1/tau)*integrate(x1)
-        part2 = +1/tau * integrate(x2)
-        part3 = 1/T1 * integrate(u)
+    def equation1(inputIntegral):
+        part1 = -(1/T1+1/tau)* x1Integrate()
+        part2 = +1/tau *x2Integrate()
+        part3 = 1/T1 * inputIntegral
         return part1 + part2 + part3
 
-    def equation2():
-        part1 = (1/T2)*integrate(x1)
-        part2 = -(1/T2) * integrate(x2)
-        return part1 + part2
+    def equation2(inputIntegral):
+        part1 = (1/T2)*x1Integrate()
+        part2 = -(1/T2) * x2Integrate()
+        return part1 + part2 + inputIntegral
 
     def compute(wave):
         global y
         y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)
+        
         if wave=='p':
             rodzaj="prostokatnym"
         elif wave=='t':
             rodzaj="trojkatnym"
         elif wave=='s':
             rodzaj='sinusoidalnym'
-        plt.plot(y1)
+        y1_wynikowe=y1[int(samples-samples/10):]
+        y2_wynikowe=y2[int(samples-samples/10):]
+        #b = u[:int(samples/10)]
         plt.tight_layout()
         plt.xlabel('t')
         plt.ylabel('x1(t)')
         plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
+        plt.plot(y1_wynikowe, 'r')
+        #plt.plot(b, 'b') # plotting t, b separately
+        plt.grid()
         plt.show()
-        plt.plot(y2)
-        plt.tight_layout()
-        plt.xlabel('t')
-        plt.ylabel('x2(t)')
+        plt.plot(y2_wynikowe, 'r')
+        #plt.plot(b, 'b') # plotting t, b separately
         plt.title('Wartosci napiecia x2(t) przy %s napieciu pobudzenia:'%rodzaj)
+        plt.grid()
         plt.show()
+       
 
     compute(wave)
     return x1, x2
@@ -198,16 +232,9 @@ def main ():
             break
         os.system("cls")
 
-k = 0
-a = 0
-b = 0
-m = 0
-A = 0
 time = 20
-delta = 0.01
+delta = 0.001
 samples = int(time / delta)
 x = []
-y = []
 u = []
-e = []
 main()
