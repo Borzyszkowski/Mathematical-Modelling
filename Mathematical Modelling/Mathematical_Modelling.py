@@ -50,6 +50,11 @@ def userdefine ():
         exit(0)
     print ("Wpisane wartosci są poprawne.")
     print ("Pracujemy nad ukladem. Prosimy o cierpliwosc - trwaja obliczenia.")
+    if (R1==1.0 and R2==1.0 or R1<R2):
+        R1=10.0
+        R2=10.0
+    if (R2==1.0):
+        R2=10.0
     return  R1, R2, C1, C2, U, wave
 
 def entrance(R1,R2,C1,C2,U,wave):
@@ -60,6 +65,15 @@ def entrance(R1,R2,C1,C2,U,wave):
        x, u = squareSignal(x, u, samples, delta, U)       
     elif wave == "t":      
        x, u = triangleSignal(x, u, samples, delta, U)
+
+def resistance (R1, samples):
+    R1nowe=[]
+    Ra=0.1*R1
+    a=0.002
+    Rb=0.9*R1
+    for i in range (int(samples/5)):
+        R1nowe.append(Ra+Rb*math.exp(-a*i))
+    return R1nowe, Rb
 
 def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     x.clear()
@@ -115,7 +129,7 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     plt.show()
     return x, u
 
-def calculations(R1,R2,C1,C2,U, wave):
+def calculations(R1,R2,C1,C2,U, wave,resi,Rb):
     global x1, t
     x1 = [0]
     x2 = [0]
@@ -184,25 +198,46 @@ def calculations(R1,R2,C1,C2,U, wave):
         part2 = -(1/T2) * x2Integrate()
         return part1 + part2 + inputIntegral
 
+    def add_resi(y1,y2,resi,Rb,R1):
+        y1_nowe=[]
+        y2_nowe=[]
+        field=int(samples/5)
+        quantity=len(str(R1))+len(str(U))-3
+        scale=1
+        odU=1
+        for i in range(quantity):
+            scale*=10
+        odU=U/5
+        div=U//10
+        for i in range (len(str(U))-3):
+            if div:
+                odU/=10
+        for i in range(field):
+            #print(resi[i])  
+            y1_nowe.append(0.01*Rb*(field-i*0.04)*y1[i]/(resi[i])/scale/R1/odU)
+            y2_nowe.append(0.01*Rb*(field-i*0.04)*y2[i]/(resi[i])/scale/R1/odU)
+        return y1_nowe, y2_nowe
+
     def compute(wave):
         global y
-        y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)
-        
+        y1, y2 = calculate(samples, delta, C2, R1, U, R2, C1, u)       
         if wave=='p':
             rodzaj="prostokatnym"
         elif wave=='t':
             rodzaj="trojkatnym"
         elif wave=='s':
             rodzaj='sinusoidalnym'
-        y1_wynikowe=y1[int(samples-samples/10):]
-        y2_wynikowe=y2[int(samples-samples/10):]
-        #b = u[:int(samples/10)]
+        y1_wynikowe=y1[int(samples-samples/5):]
+        y2_wynikowe=y2[int(samples-samples/5):]
+        y1_wynikowe, y2_wynikowe = add_resi(y1_wynikowe,y2_wynikowe,resi,Rb,R1)
+        b = u[:int(samples/5)]
+        #print(y1_wynikowe[int(samples/40)])
         plt.tight_layout()
         plt.xlabel('t')
         plt.ylabel('x1(t)')
         plt.title('Wartosci napiecia x1(t) przy %s napieciu pobudzenia:'%rodzaj)
         plt.plot(y1_wynikowe, 'r')
-        #plt.plot(b, 'b') # plotting t, b separately
+        plt.plot(b, 'b') # plotting t, b separately
         plt.grid()
         plt.show()
         plt.plot(y2_wynikowe, 'r')
@@ -221,9 +256,10 @@ def main ():
         topic()
 
         R1,R2,C1,C2,U,wave = userdefine()
+        resi, Rb = resistance(R1,samples)
         entrance(R1,R2,C1,C2,U,wave)
         
-        x1,x2 = calculations(R1,R2,C1,C2,U, wave)
+        x1,x2 = calculations(R1,R2,C1,C2,U, wave,resi, Rb)
 
         print()
         repeat=input("Wpisz 'T' aby sprobowac od nowa: ")
