@@ -1,8 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import time
 import math
-from sympy import *
 import os
 from matplotlib.pyplot import figure, show
 from numpy import arange, sin, pi
@@ -50,7 +48,7 @@ def userdefine ():
         exit(0)
     print ("Wpisane wartosci są poprawne.")
     print ("Pracujemy nad ukladem. Prosimy o cierpliwosc - trwaja obliczenia.")
-    if (R1==1.0 and R2==1.0 or R1<R2):
+    if (R1==1.0 and R2==1.0 or R1<R2 or R1<10 and R2<10):
         R1=10.0
         R2=10.0
     if (R2==1.0):
@@ -69,7 +67,7 @@ def entrance(R1,R2,C1,C2,U,wave):
 def resistance (R1, samples):
     R1nowe=[]
     Ra=0.1*R1
-    a=0.002
+    a=0.02
     Rb=0.9*R1
     for i in range (int(samples/5)):
         R1nowe.append(Ra+Rb*math.exp(-a*i))
@@ -82,8 +80,8 @@ def sinSignal(x, u, samples, delta, ampl=1, freq=1):
     for i in range(samples):
         x.append(i * delta)
         u.append(ampl * math.sin(arg * freq * x[i]))
-    a = x[:int(samples/10)]
-    b = u[:int(samples/10)]
+    a = x[:int(samples/5)]
+    b = u[:int(samples/5)]
     plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
@@ -102,8 +100,8 @@ def squareSignal(x, u, samples, delta, ampl=1, freq=1):
             u.append(ampl)
         elif i % (period/delta) > (period/(2*delta)):
             u.append(-ampl)
-    a = x[:int(samples/10)]
-    b = u[:int(samples/10)]
+    a = x[:int(samples/5)]
+    b = u[:int(samples/5)]
     plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
@@ -119,8 +117,8 @@ def triangleSignal(x, u, samples, delta, ampl=1, freq=1):
     for i in range(samples):
         x.append(i * delta)
         u.append(((ampl * 2 / halfPeriod) * (halfPeriod - abs(x[i] % (2 * halfPeriod) - halfPeriod))) - ampl)
-    a = x[:int(samples/10)]
-    b = u[:int(samples/10)]
+    a = x[:int(samples/5)]
+    b = u[:int(samples/5)]
     plt.plot(a, b)
     plt.xlabel('t')
     plt.ylabel('u(t)')
@@ -139,11 +137,11 @@ def calculations(R1,R2,C1,C2,U, wave,resi,Rb):
     T2=R2*C2
     tau=R2*C1
 
-    def integrate(arr):
-        z = [0]
-        for element in arr:
-            z.append(element + z[-1])
-        return z
+    def integrate(value):
+        integrator = [0]
+        for i in value:
+            integrator.append(i + integrator[-1])
+        return integrator
 
     def calculate(_samples, _delta, _C2, _R1, _U, _R2, _C1, _u):
         global samples, delta, C2, R1, U, R2, C1, u
@@ -214,8 +212,8 @@ def calculations(R1,R2,C1,C2,U, wave,resi,Rb):
                 odU/=10
         for i in range(field):
             #print(resi[i])  
-            y1_nowe.append(0.01*Rb*(field-i*0.04)*y1[i]/(resi[i])/scale/R1/odU)
-            y2_nowe.append(0.01*Rb*(field-i*0.04)*y2[i]/(resi[i])/scale/R1/odU)
+            y1_nowe.append(0.01*Rb*(field-i*0.03)*y1[i]/(resi[i])/scale/R1/odU)
+            y2_nowe.append(0.01*Rb*(field-i*0.03)*y2[i]/(resi[i])/scale/R1/odU)
         return y1_nowe, y2_nowe
 
     def compute(wave):
@@ -256,9 +254,8 @@ def main ():
         topic()
 
         R1,R2,C1,C2,U,wave = userdefine()
-        resi, Rb = resistance(R1,samples)
         entrance(R1,R2,C1,C2,U,wave)
-        
+        resi, Rb = resistance(R1,samples)
         x1,x2 = calculations(R1,R2,C1,C2,U, wave,resi, Rb)
 
         print()
